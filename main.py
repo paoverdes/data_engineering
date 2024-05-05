@@ -3,8 +3,9 @@ import requests
 import json
 import redshift_connector
 import uuid
+import config.credentials as cred
 
-endpoint = 'https://airquality.googleapis.com/v1/currentConditions:lookup?key={{key}}'
+endpoint = 'https://airquality.googleapis.com/v1/currentConditions:lookup?key=' + cred.key
 header = {
         'content-type': 'application/json',
         'Accept-Charset': 'UTF-8',
@@ -60,8 +61,8 @@ def new_db_connection():
         host='data-engineer-cluster.cyhh5bfevlmn.us-east-1.redshift.amazonaws.com',
         database='data-engineer-database',
         port=5439,
-        user="{{user}}",
-        password="{{password}}"
+        user=cred.db_user,
+        password=cred.db_password
     )
     return conn
 
