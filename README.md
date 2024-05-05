@@ -7,9 +7,13 @@ Install the following modules
 - pip install redshift_connector
 - pip install uuid
 
-Set up connection to redshift
-- Configure _user_ and _password_ in method new_db_connection()
-
 Enable service: airquality.googleapis.com
 - https://console.cloud.google.com/apis/library/airquality.googleapis.com
-- Configure _key_ in variable _endpoint_
+
+Set up connections
+- Create the file credentials.py in config file
+  - Configure _key_ value from airquality
+  - Configure _db_user_ and _db_password_ to use redshift
+
+To run the project
+- _python3 main.py_
