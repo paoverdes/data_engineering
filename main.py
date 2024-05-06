@@ -54,6 +54,7 @@ def main():
         r = requests.post(endpoint, data=data, headers=header)
         click.echo(f"Status code: {r.status_code}, reason: {r.reason}")
         insert_information(conn, r.status_code, r.json())
+    conn.close()
     print('Finished process')
 
 def new_db_connection():
