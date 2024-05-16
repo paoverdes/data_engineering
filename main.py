@@ -3,7 +3,7 @@ import requests
 import json
 import redshift_connector
 import uuid
-import config.credentials as cred
+from config import config as cred
 
 endpoint = 'https://airquality.googleapis.com/v1/currentConditions:lookup?key=' + cred.key
 header = {

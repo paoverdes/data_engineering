@@ -11,7 +11,7 @@ Enable service: airquality.googleapis.com
 - https://console.cloud.google.com/apis/library/airquality.googleapis.com
 
 Set up connections
-- Create the file credentials.py in config file
+- Create the file config.py in config file
   - Configure _key_ value from airquality
   - Configure _db_user_ and _db_password_ to use redshift
 
