@@ -1,15 +1,16 @@
 import click
 import requests
 import json
-import redshift_connector
+import psycopg2
 import uuid
+import pandas as pd
 from config import config as cred
 
 endpoint = 'https://airquality.googleapis.com/v1/currentConditions:lookup?key=' + cred.key
 header = {
-        'content-type': 'application/json',
-        'Accept-Charset': 'UTF-8',
-    }
+    'content-type': 'application/json',
+    'Accept-Charset': 'UTF-8',
+}
 
 
 def get_site_data(site):
@@ -40,25 +41,34 @@ def get_site_data(site):
         "languageCode": "es"
     })
 
+
 def main():
     try:
         conn = new_db_connection()
-    except:
-        print('An error occurred when connecting to database')
+    except Exception as e:
+        print('An error occurred when connecting to database: ')
+        print(e)
         print('Finished process with error')
         exit()
     create_table(conn)
     sites = ['br', 'ar', 'cl']
+    data_all_sites = []
     for site in sites:
         data = get_site_data(site)
         r = requests.post(endpoint, data=data, headers=header)
         click.echo(f"Status code: {r.status_code}, reason: {r.reason}")
-        insert_information(conn, r.status_code, r.json())
+        if r.status_code == 200:
+            data_json = r.json()
+            data_all_sites.append(data_json)
+        # else:
+        ## TODO:handle error
+    insert_information(conn, data_all_sites)
     conn.close()
     print('Finished process')
 
+
 def new_db_connection():
-    conn = redshift_connector.connect(
+    conn = psycopg2.connect(
         host='data-engineer-cluster.cyhh5bfevlmn.us-east-1.redshift.amazonaws.com',
         database='data-engineer-database',
         port=5439,
@@ -66,6 +76,7 @@ def new_db_connection():
         password=cred.db_password
     )
     return conn
+
 
 def create_table(conn):
     cursor = conn.cursor()
@@ -81,31 +92,25 @@ def create_table(conn):
     conn.commit()
 
 
-def insert_information(conn, status_code, data):
+def insert_information(conn, data_all_sites):
     cursor = conn.cursor()
-    id = str(uuid.uuid4())
+    df = pd.json_normalize(data_all_sites)
+    print(df)
+    print(df.columns)
+    df.to_csv('data_entregable_1.csv', index=False)
 
-    try:
-        if status_code == 200:
-            region = data['regionCode']
-            aqi = data['indexes'][0]['aqi']
-            co = data['pollutants'][0]['concentration']['value']
-            no2 = data['pollutants'][1]['concentration']['value']
-            o3 = data['pollutants'][2]['concentration']['value']
-            cursor.execute("insert into airquality_data (id, region, aqi, co, no2, o3, status, date) "
-                           "values (%s, %s, %s, %s, %s, %s, %s, current_date)",
-                           (id, region, aqi, co, no2, o3, 'SUCCESS'))
-            print('Data inserted')
-        else:
-            cursor.execute("insert into airquality_data (id, status, date) "
-                           "values (%s, 'ERROR', current_date)",
-                           id)
-            print('An error ocurred when getting information')
-        conn.commit()
-    except:
-        print('An error ocurred when connect to database')
-
-
+    for i in range(len(df)):
+        id = str(uuid.uuid4())
+        region = df.iloc[i]['regionCode']
+        aqi = df.iloc[i]['indexes'][0]['aqi']
+        co = df.iloc[i]['pollutants'][0]['concentration']['value']
+        no2 = df.iloc[i]['pollutants'][1]['concentration']['value']
+        o3 = df.iloc[i]['pollutants'][2]['concentration']['value']
+        cursor.execute("insert into airquality_data (id, region, aqi, co, no2, o3, status, date) "
+                       "values (%s, %s, %s, %s, %s, %s, %s, current_date)",
+                       (id, region, aqi, co, no2, o3, 'SUCCESS'))
+    conn.commit()
+    print('Data inserted')
 
 if __name__ == '__main__':
     main()
