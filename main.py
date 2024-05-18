@@ -81,14 +81,15 @@ def new_db_connection():
 def create_table(conn):
     cursor = conn.cursor()
     cursor.execute('CREATE TABLE IF NOT EXISTS paolaverdes_coderhouse.airquality_data ( '
-                   'id VARCHAR(256)   ENCODE lzo'
-                   ',region VARCHAR(256)   ENCODE lzo'
-                   ',aqi INTEGER   ENCODE az64'
-                   ',co NUMERIC(18,0)   ENCODE az64'
-                   ',no2 NUMERIC(18,0)   ENCODE az64'
-                   ',o3 NUMERIC(18,0)   ENCODE az64'
-                   ', status VARCHAR(256)   ENCODE lzo'
-                   ',date TIMESTAMP WITHOUT TIME ZONE   ENCODE az64);')
+                   'id BIGINT IDENTITY(0, 1)'
+                   ',region VARCHAR(256)'
+                   ',aqi INTEGER'
+                   ',co NUMERIC(18,0)'
+                   ',no2 NUMERIC(18,0)'
+                   ',o3 NUMERIC(18,0)'
+                   ', status VARCHAR(256)'
+                   ',date DATETIME,'
+                   'PRIMARY KEY ( region, date ));')
     conn.commit()
 
 
