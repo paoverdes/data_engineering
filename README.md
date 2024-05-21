@@ -4,8 +4,9 @@ Install the following modules
 - pip install click
 - pip install requests
 - pip install json
-- pip install redshift_connector
-- pip install uuid
+- pip install psycopg2
+- pip install pandas
+- pip install SQLAlchemy==1.4.38
 
 Enable service: airquality.googleapis.com
 - https://console.cloud.google.com/apis/library/airquality.googleapis.com
