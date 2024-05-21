@@ -115,7 +115,7 @@ def insert_information(conn, data_all_sites):
                        (region, aqi, co, no2, o3, 'SUCCESS'))
         conn.execute("merge into airquality_data "
                        "USING airquality_data_temp as temp "
-                       "ON airquality_data.region = temp.region "
+                       "ON airquality_data.region = temp.region AND airquality_data.date = temp.date "
                        "WHEN MATCHED THEN UPDATE SET "
                        "aqi = temp.aqi, co = temp.co, no2 = temp.no2, o3 = temp.o3, status = temp.status "
                        "WHEN NOT MATCHED THEN INSERT (region, aqi, co, no2, o3, status, date) "
