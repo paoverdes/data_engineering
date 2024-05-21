@@ -87,10 +87,18 @@ def create_table(conn):
                    ',no2 NUMERIC(18,0)'
                    ',o3 NUMERIC(18,0)'
                    ', status VARCHAR(256)'
-                   ',date DATETIME,'
+                   ',date DATE,'
                    'PRIMARY KEY ( region, date ));')
+    cursor.execute('CREATE TABLE IF NOT EXISTS paolaverdes_coderhouse.airquality_data_temp ( '
+                   'region VARCHAR(256)'
+                   ',aqi INTEGER'
+                   ',co NUMERIC(18,0)'
+                   ',no2 NUMERIC(18,0)'
+                   ',o3 NUMERIC(18,0)'
+                   ', status VARCHAR(256)'
+                   ',date DATE'
+                   ');')
     conn.commit()
-
 
 def insert_information(conn, data_all_sites):
     cursor = conn.cursor()
