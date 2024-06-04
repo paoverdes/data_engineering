@@ -23,6 +23,8 @@ wheels/
 share/python-wheels/
 *.egg-info/
 config/config.py
+dags/config/config.py
+keys/
 .installed.cfg
 *.egg
 MANIFEST
