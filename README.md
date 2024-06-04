@@ -19,10 +19,16 @@ Set up connections
 To run the project
 - _python3 main.py_
 
-Running de project with docker
+Docker commands
+- Docker version: _docker --version_
+- Docker Compose version: _docker-compose --version_
 - Generate the image: _docker build -t docker_image ._
 - List images:  _docker images -a_
 - Run image: _docker run docker_image_
 - List containers: _docker ps -a_
 - Containers in execution: _docker ps_
 - Remove containers: _docker rm {cointainer_id}_
+
+Apache Airflow commands
+- Initialize airflow _docker-compose up airflow-init_
+-  _docker-compose up_
