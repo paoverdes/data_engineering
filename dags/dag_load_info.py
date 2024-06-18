@@ -8,6 +8,7 @@ import requests
 import json
 import sqlalchemy as db
 import pandas as pd
+import smtplib
 
 endpoint = 'https://airquality.googleapis.com/v1/currentConditions:lookup?key=' + cred.key
 header = {
@@ -125,6 +126,38 @@ def insert_information(conn, data_all_sites):
         conn.execute("delete from airquality_data_temp;")
     print('Data inserted')
 
+def verify_information(**context):
+    conn = new_db_connection()
+    query = 'select distinct region , aqi, date, level, min_val, max_val ' \
+            'from airquality_data ad join airquality_index ai ' \
+            'on ad.aqi >= ai.min_val ' \
+            'and ad.aqi <= ai.max_val where ad.date = current_date  '
+
+    df = pd.read_sql_query(query, conn)
+    print(df)
+
+    for i in range(len(df)):
+        region = df.iloc[i]['region']
+        level = df.iloc[i]['level']
+        aqi = df.iloc[i]['aqi']
+        min_val = df.iloc[i]['min_val']
+        if min_val > 50:
+            send_email(region, level, aqi)
+
+def send_email(region, level, aqi):
+    try:
+        x = smtplib.SMTP('smtp.gmail.com', 587)
+        x.starttls()
+        x.login('paoverdes.cursos@gmail.com', '{{use_pass}}')
+        subject = 'Anomaly Detected'
+        body_text = 'Anomaly Detected in region: ' + region + ', with level: ' + level + ', and aqi: ' + str(aqi)
+        message = 'Subject: {}\n\n{}'.format(subject, body_text)
+        x.sendmail('paoverdes.cursos@gmail.com', 'paoverdes.cursos@gmail.com', message)
+        print('Exito')
+    except Exception as exception:
+        print(exception)
+        print('Failure')
+
 default_args={
     'owner': 'PaoVerdes',
     'retries':5,
@@ -138,8 +171,7 @@ with DAG(
     start_date=datetime(2024, 6, 3, 2),
     schedule_interval='@daily'
 ) as dag:
-    task1= PythonOperator(
-        task_id='process',
-        python_callable= process,
-    )
-    task1
+    get_api_data = PythonOperator(task_id='process', python_callable=process, dag=dag, provide_context=True)
+    send_email_if_anomaly = PythonOperator(task_id='send_email_if_anomaly_test', python_callable=verify_information, dag=dag, provide_context=True)
+    ##get_api_data >> send_email_if_anomaly
+    send_email_if_anomaly
