@@ -3,11 +3,6 @@
 Enable service: airquality.googleapis.com
 - https://console.cloud.google.com/apis/library/airquality.googleapis.com
 
-Set up connections
-- Create the file config.py in config file
-  - Configure _key_ value from airquality
-  - Configure _db_user_ and _db_password_ to use redshift
-
 Docker commands
 - Docker version: _docker --version_
 - Docker Compose version: _docker-compose --version_
@@ -26,7 +21,7 @@ Apache Airflow commands
   - secret_db_password
   - email
   - secret_email_password
-  - secret_key_api
+  - secret_key_api (from airquality.googleapis.com)
 
 Doing the backfilling
 - bash: _docker exec -it data_engineering-airflow-scheduler-1 bash_
