@@ -12,6 +12,8 @@ header = {
     'content-type': 'application/json',
     'Accept-Charset': 'UTF-8',
 }
+
+sites_api = ['br', 'ar', 'cl']
 min_aqi_to_alert = 50
 
 def create_connection_and_structure():
@@ -36,7 +38,7 @@ def new_db_connection():
     return conn
 
 def process_air_quality_data():
-    sites = ['br', 'ar', 'cl']
+    sites = sites_api
     data_all_sites = []
     for site in sites:
         data = get_site_data(site)
