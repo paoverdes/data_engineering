@@ -1,13 +1,5 @@
 # data_engineering
 
-Install the following modules
-- pip install click
-- pip install requests
-- pip install json
-- pip install psycopg2
-- pip install pandas
-- pip install SQLAlchemy==1.4.38
-
 Enable service: airquality.googleapis.com
 - https://console.cloud.google.com/apis/library/airquality.googleapis.com
 
@@ -15,9 +7,6 @@ Set up connections
 - Create the file config.py in config file
   - Configure _key_ value from airquality
   - Configure _db_user_ and _db_password_ to use redshift
-
-To run the project
-- _python3 main.py_
 
 Docker commands
 - Docker version: _docker --version_
@@ -32,3 +21,13 @@ Docker commands
 Apache Airflow commands
 - Initialize airflow _docker-compose up airflow-init_
 -  _docker-compose up_
+- Config the following variables:
+  - db_user
+  - secret_db_password
+  - email
+  - secret_email_password
+  - secret_key_api
+
+Doing the backfilling
+- bash: _docker exec -it data_engineering-airflow-scheduler-1 bash_
+- execute the following command: _airflow dags backfill -s {start_date} -e {finish_date} DAG_LOAD_INFORMATION_WORKFLOW_
